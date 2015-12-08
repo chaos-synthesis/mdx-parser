@@ -8,7 +8,7 @@ var gulp        = require('gulp'),
     sourcemaps  = require('gulp-sourcemaps'),
     del         = require('del'),
     tsd         = require('gulp-tsd'),
-    to5ify      = require('6to5ify'),
+    babelify    = require('babelify'),
     uglify      = require('gulp-uglify'),
     buffer      = require('vinyl-buffer'),
     jison       = require('gulp-jison'),
@@ -53,7 +53,7 @@ gulp.task('bundle', ['through'], function () {
             "experimentalDecorators": true,
             "removeComments": true
         })
-        //.transform(to5ify)
+        //.transform(babelify)
         .bundle()
         .on('error', gutil.log.bind(gutil, 'Browserify Error'))
         .pipe(source('bundle.js'))
