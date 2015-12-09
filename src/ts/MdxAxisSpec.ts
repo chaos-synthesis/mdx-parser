@@ -13,7 +13,8 @@ export default class MdxAxisSpec implements stm.MdxParseable {
 
     static parse(mdx:string): MdxAxisSpec[] {
         var axis = parser.parse(mdx);
-        axis.forEach((ax) => {
+
+        axis.forEach((ax:any) => {
             const entities = MdxEntity.parse(ax.entites);
         });
 

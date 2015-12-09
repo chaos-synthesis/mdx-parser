@@ -55,14 +55,12 @@ OnClause : SetClause ON ROWS { $$ = {type:$3, entites:$1}; }
 
 SetClause : Set | NON EMPTY Set { $$ = $3; $$.nonEmpty = true; };
 
-Set : '{' ExprList '}' { $$ = [].concat($2); }
+Set : '{' Tuples '}' { $$ = [].concat($2); }
 	| Set '*' Set { $$ = [].concat($1).concat($3); }
 	;
 
-ExprList : ExprList ',' Set { $$ = [].concat($1).concat($3); }
-    | Set
-    | Entity
-    | ExprList ',' Entity { $$ = $1 + $2 + $3; };
+Tuples : Entity
+    | Tuples ',' Entity { $$ = $1 + $2 + $3; };
 
 Entity : ENTITY | Entity ENTITY { $$ = $1+$2; } | Entity NUMBER { $$ = $1+$2; } ;
 

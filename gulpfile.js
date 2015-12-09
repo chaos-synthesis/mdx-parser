@@ -47,13 +47,13 @@ gulp.task('bundle', ['through'], function () {
         extensions: ['.ts', '.js'],
         debug: true
     })
+        .transform(babelify.configure({only:/parsers/}))
         .plugin(tsify, {"module": "commonjs",
             "target": "ES5",
             "noImplicitAny": false,
             "experimentalDecorators": true,
             "removeComments": true
         })
-        //.transform(babelify)
         .bundle()
         .on('error', gutil.log.bind(gutil, 'Browserify Error'))
         .pipe(source('bundle.js'))

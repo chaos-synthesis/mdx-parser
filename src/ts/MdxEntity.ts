@@ -1,5 +1,5 @@
 declare var require;
-var parser = require('../parsers/axis');
+var parser = require('../parsers/entity');
 import stm = require('./MdxStatement');
 
 export default class MdxEntity implements stm.MdxParseable {

@@ -99,7 +99,7 @@ case 6:
  this.$ = {name: $$[$0-1], args: [$$[$0-2], $$[$0]]} 
 break;
 case 7:
- this.$ = [$$[$0].replace(/^['"\[]|['"\]]$/g, '')]; 
+ this.$ = [$$[$0].replace(/^['"\[]|['"\]]$/g, /*"*/'')]; 
 break;
 case 8:
  this.$ = $$[$0-2].concat($$[$0].replace(/^['"\[]|['"\]]$/g, '')); 
