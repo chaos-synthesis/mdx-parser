@@ -11,7 +11,6 @@
 '}'												return '}'
 '*'												return '*'
 ','												return ','
-'&'												return '&'
 
 'NON'											return 'NON'
 'EMPTY'											return 'EMPTY'
@@ -38,9 +37,9 @@
 
 
 
-main : AxisSpecificationList EOF { return [].concat($1); } ;
+main : AxisSpecificationList EOF { return $1; } ;
 
-AxisSpecificationList : OnClause
+AxisSpecificationList : OnClause { $$ = [$1]; }
     | AxisSpecificationList ',' OnClause { $$ = [].concat($1).concat($3); }
     ;
 
@@ -51,17 +50,24 @@ OnClause : SetClause ON ROWS { $$ = {type:$3, entites:$1}; }
 	| SetClause ON CHAPTERS { $$ = {type:$3, entites:$1}; }
 	| SetClause ON AXIS '(' NUMBER ')' { $$ = {type:$3, entites:$1, pos:$5}; }
 	| SetClause ON NUMBER { $$ = {pos:$3, entites:$1}; }
-	;
+;
 
-SetClause : Set | NON EMPTY Set { $$ = $3; $$.nonEmpty = true; };
+SetClause : Set { $$ = {sets:[].concat($1), nonEmpty: false}; }
+    | NON EMPTY Set { $$ = {sets:[].concat($3), nonEmpty: true}; }
+;
 
-Set : '{' Tuples '}' { $$ = [].concat($2); }
+Set : '{' Tuples '}' { $$ = {tuples: $2}; }
 	| Set '*' Set { $$ = [].concat($1).concat($3); }
-	;
+;
 
 Tuples : Entity
-    | Tuples ',' Entity { $$ = $1 + $2 + $3; };
+    | Tuples ',' Entity { $$ = $1 + $2 + $3; }
+    | Tuples '*' Entity { $$ = $1 + $2 + $3; }
+;
 
-Entity : ENTITY | Entity ENTITY { $$ = $1+$2; } | Entity NUMBER { $$ = $1+$2; } ;
+Func : Entity '(' ')' { $$ = $1 + $2 + $3; }
+    | Entity '(' Tuples ')' { $$ = $1 + $2 + $3 + $4; } ;
+
+Entity : ENTITY | Entity ENTITY { $$ = $1+$2; } | Entity NUMBER { $$ = $1+$2; } | Func ;
 
 %%

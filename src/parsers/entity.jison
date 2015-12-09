@@ -34,31 +34,44 @@
 
 %%
 
-main : ExprList EOF { return [].concat($1); } ;
+main : ExprList EOF { return $1; } ;
 
 ExprList : Expression { $$ = [$1]; }
     | ExprList ',' Expression { $$ = $1.concat($3); }
 ;
 
-Expression : Entity | '(' Tuples ')' { $$ = $2 }
-| Expression Op Entity { $$ = {name: $2, args: [$1, $3]} }
-    | Expression Op '(' Tuples ')' { $$ = {name: $2, args: [$1, $4]} }
+Expression : Entity { $$ = {entities: [$1]}; }
+    | '(' Tuples ')' { $$ = $2 }
+    | Expression Op Entity { $$ = {name: $2, left: $1, right: $3, isExpression: true} }
+    | Expression Op '(' Tuples ')' { $$ = {name: $2, left: $1, right: $4, isExpression: true} }
 ;
 
-Func : Literal '(' ')' | Literal '(' Tuples ')' { $$ = {name: $1, args: $3}} ;
+Func : Literal '(' ')' { $$ = {name: $1, args: [], isFunction: true}}
+    | Literal '(' Tuples ')' { $$ = {name: $1, args: $3, isFunction: true}} ;
 
-Tuples : Entity { $$ = [$1]; }
-    | Tuples ',' Entity { $$ = $1; $$.push($3); }
+Tuples : Entity { $$ = {entities: [$1]}; }
+    | Tuples ',' Entity { $$ = $1; $$.entities.push($3); }
 ;
 
-Entity : Literal { $$ = [$1.replace(/^['"\[]|['"\]]$/g, /*"*/'')]; }
-    | Entity '.' Literal { $$ = $1; $$.push($3.replace(/^['"\[]|['"\]]$/g, '')); }
-| Func { $$ = [$1]; }
+Entity : Literal {
+        $$ = {
+            name: $1.replace(/^['"\[]|['"\]]$/g, /*"*/''),
+            levels: []
+        };
+    }
+    | Entity '.' Literal {
+        $$ = {
+            name: $3.replace(/^['"\[]|['"\]]$/g, /*"*/''),
+            levels: []
+        };
+        $$.levels = [$1.name].concat($1.levels);
+    }
+    | Func
 ;
 
 Literal : LITERAL
 	| BRALITERAL
-	| AMPERSAND BRALITERAL { $$ = `${$1}${$2}` }
+	| '&' BRALITERAL { $$ = `${$1}${$2}` }
 ;
 
 Op : '*' | '/' | '+' | '-' | '>' | '<' | '>=' | '<=' | '=' | '!=' ;

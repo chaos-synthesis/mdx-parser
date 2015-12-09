@@ -20,7 +20,7 @@ export class MdxStatement implements MdxParseable {
 
     static parse(mdx:string):MdxStatement {
         var parseResult = parser.parse(mdx);
-        var axis = MdxAxisSpec.parse(parseResult.statements[0].axis);
+        var axis = MdxAxisSpec.parse(parseResult[0].axis);
         console.log(JSON.stringify(axis));
         return new MdxStatement();
     }
